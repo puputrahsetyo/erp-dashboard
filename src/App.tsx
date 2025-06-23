@@ -1,17 +1,6 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate, Outlet, useLocation } from "react-router-dom";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Inventory from "./pages/Inventory/Inventory";
-import Sales from "./pages/Sales/Sales";
-import Purchasing from "./pages/Purchasing/Purchasing";
-import HR from "./pages/HR/HR";
-import Finance from "./pages/Finance/Finance";
-import Settings from "./pages/Settings/Settings";
-import CRM from "./pages/CRM/CRM";
-import Manufacturing from "./pages/Manufacturing/Manufacturing";
-import AssetManagement from "./pages/AssetManagement/AssetManagement";
-import ProjectManagement from "./pages/ProjectManagement/ProjectManagement";
-import Login from "./pages/Login/Login";
+import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
+import AppsRouter from "./Router";
 
 // Layout component for sidebar and main content
 function AppLayout() {
@@ -31,7 +20,7 @@ function AppLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className={`w-64 bg-white shadow-lg p-6 ${sidebarOpen ? "block" : "hidden"} md:block`}>
+      <aside className={`w-64 bg-white shadow-lg p-6 h-screen overflow-y-auto ${sidebarOpen ? "block" : "hidden"} md:block`}>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="md:hidden absolute top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -40,7 +29,7 @@ function AppLayout() {
         </button>
 
       {/* <aside className="w-64 bg-white shadow-lg p-6"> */}
-        <div className="flex items-center mb-6 space-x-4">
+        <div className="flex items-center mb-6 space-x-4" onClick={() => setSidebarOpen(!sidebarOpen)}>
           <img src="/erp-logo.svg" alt="ERP Logo" className="h-16 w-16 rounded-full" />
           <h1 className="text-xl font-bold">ERP Menu</h1>
         </div>
@@ -114,11 +103,11 @@ function AppLayout() {
             </details>
         </ul>
       </aside>
-      <main className="flex-1 p-8">
-        <header className="mb-6">
+      <main className="flex-1 p-8 overflow-auto h-screen">
+        {/* <header className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">ERP Dashboard</h1>
           <p className="text-gray-600">Welcome to your ERP system</p>
-        </header>
+        </header> */}
         <div className="mb-6">
           {sidebarOpen && (
             <button
@@ -145,37 +134,7 @@ function RequireAuth({ isAuthenticated }: { isAuthenticated: boolean }) {
 }
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Persist authentication in localStorage
-    return localStorage.getItem("isAuthenticated") === "true";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("isAuthenticated", isAuthenticated ? "true" : "false");
-  }, [isAuthenticated]);
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
-        <Route
-          path="/*"
-          element={<RequireAuth isAuthenticated={isAuthenticated} />}
-        >
-          <Route path="" element={<Dashboard />} />
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="sales" element={<Sales />} />
-          <Route path="purchasing" element={<Purchasing />} />
-          <Route path="hr" element={<HR />} />
-          <Route path="finance" element={<Finance />} />
-          <Route path="crm" element={<CRM />} />
-          <Route path="manufacturing" element={<Manufacturing />} />
-          <Route path="assets" element={<AssetManagement />} />
-          <Route path="project-management" element={<ProjectManagement />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-        <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
-      </Routes>
-    </Router>
-  );
+    <AppsRouter RequireAuth={RequireAuth}  />
+  )
 }
