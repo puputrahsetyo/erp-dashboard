@@ -29,7 +29,7 @@ A simple internal ERP dashboard prototype built with **React**, **TypeScript**, 
 
 ```bash
 # clone this repository
-git clone https://github.com/your-username/erp-dashboard.git
+git clone https://github.com/puputrahsetyo/erp-dashboard.git
 cd erp-dashboard
 
 # install dependencies
@@ -44,18 +44,20 @@ npm run dev
 Use this dummy login:
 
 ```
-Username: admin
-Password: admin
+Username: admin@mail.com
+Password: adminpass
 ```
 
 ## 📁 Project Structure
 
 ```
 src/
-├── components/        # Reusable components (optional)
-├── pages/             # Each ERP module page
+├── components/        # Reusable UI components
+├── constants/         # Application-wide constants and configuration
+├── pages/             # Each ERP module page (e.g., Dashboard, Inventory, HR, ...)
 ├── assets/            # Icons or images
-└── Router.tsx         # Routing & layout
+├── App.tsx            # Main application component; sets up global layout and providers
+└── Router.tsx         # Defines application routes and navigation structure
 ```
 
 ## 📄 License
