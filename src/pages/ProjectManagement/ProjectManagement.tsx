@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { PROJECTS_CONSTANTS, PROJECTS_DATA } from "../../constants/projects";
 
 /**
  * ProjectManagement component for managing projects.
@@ -16,68 +17,55 @@ import React from "react";
  * return <ProjectManagement />;
  */
 
-const projects = [
-    {
-        id: 1,
-        name: "Website Redesign",
-        status: "In Progress",
-        manager: "Alice Johnson",
-        dueDate: "2024-07-15",
-    },
-    {
-        id: 2,
-        name: "Mobile App Launch",
-        status: "Completed",
-        manager: "Bob Smith",
-        dueDate: "2024-05-30",
-    },
-    {
-        id: 3,
-        name: "API Integration",
-        status: "Pending",
-        manager: "Carol Lee",
-        dueDate: "2024-08-10",
-    },
-];
-
-const statusColors: Record<string, string> = {
-    "In Progress": "bg-yellow-100 text-yellow-800",
-    Completed: "bg-green-100 text-green-800",
-    Pending: "bg-gray-100 text-gray-800",
-};
-
 const ProjectManagement: React.FC = () => {
+     // Pagination settings
+    const ITEMS_PER_PAGE = PROJECTS_CONSTANTS.PAGINATION.ITEMS_PER_PAGE ||10;
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalItems = PROJECTS_DATA.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+    // Paginated data
+    const paginatedData = useMemo(
+        () =>
+            PROJECTS_DATA.slice(
+                (currentPage - 1) * ITEMS_PER_PAGE,
+                currentPage * ITEMS_PER_PAGE
+            ),
+        [currentPage]
+    );
+
+    // Pagination controls
+    const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+    const handleNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
             <div className="max-w-5xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Project Management</h1>
+                <h1 className="text-3xl font-bold mb-6 text-gray-800">{PROJECTS_CONSTANTS.PAGE_TITLE}</h1>
                 <div className="bg-white shadow rounded-lg overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Project Name
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Manager
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Due Date
-                                </th>
+                                {
+                                    PROJECTS_CONSTANTS.TABLE_HEADERS.map((header) => (
+                                        <th
+                                            key={header.key}
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {header.label}
+                                        </th>
+                                    ))
+                                }
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {projects.map((project) => (
+                            {paginatedData.map((project) => (
                                 <tr key={project.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {project.name}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[project.status]}`}
+                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${PROJECTS_CONSTANTS.STATUS_COLORS[project.status as keyof typeof PROJECTS_CONSTANTS.STATUS_COLORS]}`}
                                         >
                                             {project.status}
                                         </span>
@@ -91,6 +79,31 @@ const ProjectManagement: React.FC = () => {
                                 </tr>
                             ))}
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colSpan={PROJECTS_CONSTANTS.TABLE_HEADERS.length} className="px-6 py-4">
+                                    <div className="flex justify-between items-center">
+                                        <button
+                                            onClick={handlePrev}
+                                            disabled={currentPage === 1}
+                                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50"
+                                        >
+                                            Previous
+                                        </button>
+                                        <span className="text-sm text-gray-600">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button
+                                            onClick={handleNext}
+                                            disabled={currentPage === totalPages}
+                                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">

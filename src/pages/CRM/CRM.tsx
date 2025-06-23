@@ -1,4 +1,5 @@
 import React from "react";
+import { CRM_RECENT_ACTIVITY } from "../../constants/crm";
 
 /**
  * CRM component for managing customer relationships.
@@ -16,6 +17,7 @@ import React from "react";
  */
 
 const CRM: React.FC = () => {
+    const crmLastActivity = CRM_RECENT_ACTIVITY.slice(0, 3); // Display only the last 5 activities
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             <div className="max-w-7xl mx-auto">
@@ -47,18 +49,12 @@ const CRM: React.FC = () => {
                 <section className="bg-white rounded-lg shadow p-6">
                     <h2 className="text-xl font-semibold text-gray-700 mb-4">Recent Activities</h2>
                     <ul className="divide-y divide-gray-100">
-                        <li className="py-3 flex justify-between items-center">
-                            <span className="text-gray-700">Added new lead: John Doe</span>
-                            <span className="text-xs text-gray-400">2 hours ago</span>
-                        </li>
-                        <li className="py-3 flex justify-between items-center">
-                            <span className="text-gray-700">Closed deal with Acme Corp</span>
-                            <span className="text-xs text-gray-400">Yesterday</span>
-                        </li>
-                        <li className="py-3 flex justify-between items-center">
-                            <span className="text-gray-700">Updated customer info: Jane Smith</span>
-                            <span className="text-xs text-gray-400">3 days ago</span>
-                        </li>
+                        {crmLastActivity.map((activity, index) => (
+                            <li key={index} className="py-3 flex justify-between items-center">
+                                <span className="text-gray-700">{activity.activity}</span>
+                                <span className="text-xs text-gray-400">{activity.date}</span>
+                            </li>
+                        ))}
                     </ul>
                 </section>
             </div>

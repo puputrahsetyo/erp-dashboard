@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { ASSET_CONSTANTS, ASSETS_DATA } from "../../constants/assets";
 
 /**
  * Asset Management component for managing company assets.
@@ -16,17 +17,29 @@ import React from "react";
  * return <AssetManagement />;
  */
 
-const assets = [
-    { id: 1, name: "Laptop", type: "Electronics", status: "Active", assignedTo: "John Doe" },
-    { id: 2, name: "Office Chair", type: "Furniture", status: "Inactive", assignedTo: "Jane Smith" },
-    { id: 3, name: "Projector", type: "Electronics", status: "Active", assignedTo: "Meeting Room" },
-];
-
 const AssetManagement: React.FC = () => {
+    const ITEMS_PER_PAGE = ASSET_CONSTANTS.PAGINATION.ITEMS_PER_PAGE ||10;
+    const [currentPage, setCurrentPage] = useState(1);
+        const totalItems = ASSETS_DATA.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    
+        // Paginated data
+        const paginatedData = useMemo(
+            () =>
+                ASSETS_DATA.slice(
+                    (currentPage - 1) * ITEMS_PER_PAGE,
+                    currentPage * ITEMS_PER_PAGE
+                ),
+            [currentPage]
+        );
+    
+        // Pagination controls
+        const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+        const handleNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
             <div className="max-w-5xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Asset Management</h1>
+                <h1 className="text-3xl font-bold mb-6 text-gray-800">{ASSET_CONSTANTS.PAGE_TITLE}</h1>
                 <div className="bg-white shadow rounded-lg p-6">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold text-gray-700">Assets</h2>
@@ -47,7 +60,7 @@ const AssetManagement: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
-                                {assets.map((asset) => (
+                                {paginatedData.map((asset) => (
                                     <tr key={asset.id}>
                                         <td className="px-4 py-2">{asset.id}</td>
                                         <td className="px-4 py-2">{asset.name}</td>
@@ -70,7 +83,7 @@ const AssetManagement: React.FC = () => {
                                         </td>
                                     </tr>
                                 ))}
-                                {assets.length === 0 && (
+                                {paginatedData.length === 0 && (
                                     <tr>
                                         <td colSpan={6} className="text-center py-4 text-gray-400">
                                             No assets found.
@@ -78,6 +91,31 @@ const AssetManagement: React.FC = () => {
                                     </tr>
                                 )}
                             </tbody>
+                             <tfoot>
+                                <tr>
+                                    <td colSpan={ASSET_CONSTANTS.TABLE_HEADERS.length}>
+                                        <div className="flex justify-between items-center px-6 py-4">
+                                            <button
+                                                onClick={handlePrev}
+                                                disabled={currentPage === 1}
+                                                className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+                                            >
+                                                {                                        ASSET_CONSTANTS.PAGINATION.PREVIOUS || "Previous"}
+                                            </button>
+                                            <span className="text-sm text-gray-600">
+                                                Page {currentPage} of {totalPages}
+                                            </span>
+                                            <button
+                                                onClick={handleNext}
+                                                disabled={currentPage === totalPages}
+                                                className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+                                            >
+                                                {ASSET_CONSTANTS.PAGINATION.NEXT || "Next"}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
